@@ -12,6 +12,11 @@ import {
   Pagination,
 } from "react-bootstrap";
 import { useState, useEffect } from "react";
+import React from "react";
+import ReactDom from "react-dom";
+import MarkdownRenderer from "react-markdown-renderer";
+
+const markdown = "# This is a H1  \n## This is a H2  \n###### This is a H6";
 
 function App() {
   const [pageNumber, setPageNumber] = useState(1);
@@ -25,10 +30,29 @@ function App() {
     );
     const json = await response.json();
     setReposContent(json.items);
-    setPageNumber(pageNumber + 1);
+    setPageNumber(pageNumber);
     console.log(json);
   };
 
+  const fetchReadme = async () => {
+    const readme = await fetch(
+      `https://api.github.com/repos${window.location.pathname}/readme`
+    );
+
+    const json = await readme.json();
+    console.log(json);
+  };
+
+  useEffect(() => {
+    fetchReadme();
+  }, []);
+
+  // if (window.location.pathname)
+  //   return (
+  //     <div>
+  //       <MarkdownRenderer markdown={markdown} />
+  //     </div>
+  //   );
   return (
     <div className="App">
       <Navbar bg="dark" variant="dark">
@@ -68,7 +92,11 @@ function App() {
               <Tab.Content>
                 <Tab.Pane eventKey="first">
                   {reposContent.map((r) => {
-                    return <div>{r.full_name}</div>;
+                    return (
+                      <div>
+                        <a href={r.full_name}>{r.full_name}</a>
+                      </div>
+                    );
                   })}
                 </Tab.Pane>
                 <Tab.Pane eventKey="second">hi</Tab.Pane>
@@ -87,17 +115,18 @@ function App() {
             />
           )}
           {pageNumber > 1 && (
-            <Pagination.Item onClick={(e) => onSearchCodeHub(e, pageNumber)}>
+            <Pagination.Item
+              onClick={(e) => onSearchCodeHub(e, pageNumber - 1)}
+            >
               {pageNumber - 1}
             </Pagination.Item>
           )}
           <Pagination.Item onClick={(e) => onSearchCodeHub(e, pageNumber)}>
             {pageNumber}
           </Pagination.Item>
-          <Pagination.Item onClick={(e) => onSearchCodeHub(e, pageNumber)}>
+          <Pagination.Item onClick={(e) => onSearchCodeHub(e, pageNumber + 1)}>
             {pageNumber + 1}
           </Pagination.Item>
-          <Pagination.Item>{3}</Pagination.Item>
           <Pagination.Ellipsis />
 
           <Pagination.Item>{10}</Pagination.Item>
