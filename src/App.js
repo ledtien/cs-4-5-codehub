@@ -58,28 +58,30 @@ function App() {
   const [reposContent, setReposContent] = useState([]);
   const [searchContent, setSearchContent] = useState();
   const [readme, setReadme] = useState();
-  const [user, setUser] = useState();
+  const [users, setUsers] = useState([]);
 
   const onSearchCodeHub = (e) => {
     e.preventDefault();
     onSearchRepos();
-    onSearchUser();
+    onSearchUsers();
   };
 
-  const onSearchUser = async () => {
-    const response = await fetch(
-      `https://api.github.com/search/users?q=${searchContent}&page=${pageNumber}`
-    );
-    const json = await response.json();
-    console.log(json);
-    setUser(json.items);
-  };
   const onSearchRepos = async () => {
     const response = await fetch(
       `https://api.github.com/search/repositories?q=${searchContent}&page=${pageNumber}`
     );
     const json = await response.json();
     setReposContent(json.items);
+    setPageNumber(pageNumber + 1);
+  };
+
+  const onSearchUsers = async () => {
+    const response = await fetch(
+      `https://api.github.com/search/users?q=${searchContent}&page=${pageNumber}`
+    );
+    const json = await response.json();
+    setUsers(json.items);
+    console.log(json.items);
     setPageNumber(pageNumber + 1);
   };
 
@@ -172,7 +174,7 @@ function App() {
                   })}
                 </Tab.Pane>
                 <Tab.Pane eventKey="second">
-                  {user.map((u) => {
+                  {users.map((u) => {
                     return (
                       <Card className="p-1 mb-3">
                         <Card.Body className="text-left">
